@@ -1,0 +1,27 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from .app_vars import *
+
+DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}?sslmode={}'.format(db_username, db_password, host_server,
+                                                               db_server_port, database_name, ssl_mode)
+
+# database = databases.Database(DATABASE_URL)
+
+SQLALCHEMY_DATABASE_URL = DATABASE_URL
+# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
